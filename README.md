@@ -4,6 +4,32 @@ Your challenge, if you wish to accept it (and we sure hope you will), is to opti
 
 To get started, check out the repository, inspect the code,
 
+### Steps to run the application
+
+Application can be run by opening up index.html- the various other webpages and crucially, pizza.html, are contained in the links on the home page. Alternatively the other webpages can be opened from their own files (pizza.html is located in the folder views).
+
+### Optimisations made for pizza.html
+
+In views/js/main.js, the following changes were made to produce a consistent 60FPS for scrolling and less than 5ms time to change pizza sizes:
+
+#### First: Scrolling
+
+First, the updatePositions function creates visual changes so where it is called on line 525 and 544, we have added a requestAnimationFrame so that it is run at the optimal time.
+
+Second, on line 533 we have reduced the number of <img> elements representing moving Pizzas to append to the DOM from 200 to 25, you only need so many to fill the screen. 
+
+Third, in relation to the actual UpdatePositions function starting on line 495, instead of accessing the DOM every time we call it, we created a global array referenced to elements with class 'mover' outside of it. We refactored some of the code involving calculating the scrollTop because that only needs to be done once rather than in a loop. We also separated our layout reads and style changes to avoid the risk of FSL.
+
+Fourth, in views/css/style.css we have made changes to the styling rules applying to elements with class 'mover', so that they are on their own composite layer and reducing the paint work each frame.
+
+#### Second: Resize Pizzas
+
+First, we are always accessing the element with class 'randomPizzaContainer' so on line 441 we called it just once and stored it in a variable.
+
+Second, a series of layout reads were done in the loop on line 445, these only need to be done once since the size of the Pizzas are the same, so this was refactored.
+
+Third, the calculate dx function is convoluted and unnecessary; we recoded this so that the size is calculated solely using the SizeSwitcher function.
+
 ### Getting started
 
 ####Part 1: Optimize PageSpeed Insights score for index.html

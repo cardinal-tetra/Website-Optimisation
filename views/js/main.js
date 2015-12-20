@@ -421,14 +421,7 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
-   // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  function determineDx (elem, size) {
-    var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
-    var oldSize = oldWidth / windowWidth;
-
-    // TODO: change to 3 sizes? no more xl?
-    // Changes the slider value to a percent width
+   // Completely removed the complex and unnecessary calculate DX function, resizing determined using sizeSwitcher
     function sizeSwitcher (size) {
       switch(size) {
         case "1":
@@ -441,23 +434,20 @@ var resizePizzas = function(size) {
           console.log("bug in sizeSwitcher");
       }
     }
-
-    var newSize = sizeSwitcher(size);
-    var dx = (newSize - oldSize) * windowWidth;
-
-    return dx;
-  }
-
-  // Iterates through pizza elements on the page and changes their widths
-  function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    
+    var newwidth = sizeSwitcher(size) * 100 + '%';
+    
+    // Create own variable for pizzas
+    var randomPizzaContainer = document.getElementsByClassName('randomPizzaContainer');
+    
+  // Iterates through pizza elements on the page and changes their widths, note that previous convoluted layout reads have been taken out, the newwidth only needs to be calculated once
+  function changePizzaSizes() {
+    for (var i = 0; i < randomPizzaContainer.length; i++) {
+      randomPizzaContainer[i].style.width = newwidth;
     }
   }
 
-  changePizzaSizes(size);
+  changePizzaSizes();
 
   // User Timing API is awesome
   window.performance.mark("mark_end_resize");
@@ -498,14 +488,25 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
+
+    // Created global array rather access DOM every scroll, and also used more efficient access method
+    var items = document.getElementsByClassName('mover');
+
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-
-  var items = document.querySelectorAll('.mover');
+    
+    // There is no need to read scrollTop for ever single item
+    var phase = document.body.scrollTop / 1250;
+  
+  // batch our layout reads together
+  var itemBasicLeft = [];
   for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    itemBasicLeft[i] = items[i].basicLeft;
+  }
+    
+  for (var i = 0; i < items.length; i++) {
+    items[i].style.left = itemBasicLeft[i] + 100 * Math.sin(phase + (i % 5)) + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -519,13 +520,17 @@ function updatePositions() {
 }
 
 // runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+window.addEventListener('scroll', function() {
+    // added rAF since there are visual changes
+    requestAnimationFrame(updatePositions);
+})
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+    // Reduced the number of moving Pizzas to generate
+  for (var i = 0; i < 25; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
@@ -535,5 +540,6 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
-  updatePositions();
+    // added rAF since there are visual changes
+  requestAnimationFrame(updatePositions);
 });
