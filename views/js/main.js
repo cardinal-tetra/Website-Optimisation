@@ -442,7 +442,7 @@ var resizePizzas = function(size) {
     
   // Iterates through pizza elements on the page and changes their widths, note that previous convoluted layout reads have been taken out, the newwidth only needs to be calculated once
   function changePizzaSizes() {
-    for (var i = 0; i < randomPizzaContainer.length; i++) {
+    for (var i = 0, j = randomPizzaContainer.length; i < j; i++) {
       randomPizzaContainer[i].style.width = newwidth;
     }
   }
@@ -458,9 +458,9 @@ var resizePizzas = function(size) {
 
 window.performance.mark("mark_start_generating"); // collect timing data
 
+var pizzasDiv = document.getElementById("randomPizzas");
 // This for-loop actually creates and appends all of the pizzas when the page loads
 for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -501,7 +501,7 @@ function updatePositions() {
   
   // batch our layout reads together
   var itemBasicLeft = [];
-  for (var i = 0; i < items.length; i++) {
+  for (var i = 0, j = items.length; i < j; i++) {
     itemBasicLeft[i] = items[i].basicLeft;
   }
     
@@ -529,9 +529,10 @@ window.addEventListener('scroll', function() {
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
+    var elem;
     // Reduced the number of moving Pizzas to generate
   for (var i = 0; i < 25; i++) {
-    var elem = document.createElement('img');
+    elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
