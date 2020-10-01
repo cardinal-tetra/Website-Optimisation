@@ -1,4 +1,4 @@
-### Website Performance Optimization###
+### Website Performance Optimization
 
 As part of Udacity's Front-End Web Developer Nanodegree, a website was provided with a range of performance related issues. The inefficient application's JavaScript, CSS, and asset delivery was optimised (sometimes with the help of Gulp) leading it to achieve a PageSpeed score of 95 for mobile and 97 for desktop. Simply by opening `index.html` in the root directory we can run the application containing the links to various other webpages including `pizza.html` which initially suffered from inefficiencies in browser rendering. In `views/js/main.js`, the following changes were made to produce a consistent 60FPS for scrolling and less than 5ms time to change pizza sizes:
 
